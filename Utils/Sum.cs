@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Gusto.Launcher.Utils
+namespace RX14.Utils
 {
-    class Sum
+    public class Sum
     {
         public static string sha1sum(string filelocation)
         {

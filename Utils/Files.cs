@@ -7,12 +7,12 @@ using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 
-namespace Gusto.Launcher.Utils
+namespace RX14.Utils
 {
     /// <summary>
     /// Class for handling file functions
     /// </summary>
-    class Files
+    public class Files
     {
         /// <summary>
         /// Deletes all files in an array
@@ -56,7 +56,7 @@ namespace Gusto.Launcher.Utils
             }
         }
 
-        public static void unZip(string FileName, string Directory, string FileFilter = "", bool abortLaunchOnExtractErrors = false, bool showErrors = true)
+        public static void unZip(string FileName, string Directory, string FileFilter = "", string[] mainErrorActions = null, bool silent = false)
         {
             FastZip fz = new FastZip();
             try
@@ -65,7 +65,7 @@ namespace Gusto.Launcher.Utils
             }
             catch (Exception e)
             {
-                if (showErrors) Logging.showError(e.ToString(), quitLaunch: abortLaunchOnExtractErrors);
+                if (!silent) Logging.showError(e.ToString(), mainErrorActions);
             }
             fz = null;
         }

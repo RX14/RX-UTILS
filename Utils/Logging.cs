@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
-namespace Gusto.Launcher.Utils
+namespace RX14.Utils
 {
     /// <summary>
     /// Handles Logging
     /// </summary>
-    class Logging
+    public class Logging
     {
+        public delegate void _showErrorDelegate(string logMessage, string[] actions);
+        public delegate void _customLogDelegate(string logMessage, int logLevel);
+        public static List<_showErrorDelegate> showErrorDelegates = new List<_showErrorDelegate>();
+        public static List<_customLogDelegate> customLogDelegates = new List<_customLogDelegate>();
+        public static string LogPrefix;
+        
         /// <summary>
         /// Logs a Message
         /// 
@@ -31,38 +36,28 @@ namespace Gusto.Launcher.Utils
             else if (logLevel == 2) logLevelString = "INFO";
             else if (logLevel == 3) logLevelString = "WARN";
             else if (logLevel == 4) logLevelString = "ERROR";
-            else logLevelString = "Info";
+            else logLevelString = "LOG-LVL-ERR";
             
             //Generate Log String
-            string toLog = DateTime.Now.ToString("hh:mm:ss tt") + " [GustoLauncher] ";
+            string toLog = DateTime.Now.ToString("hh:mm:ss tt") + " ["+ LogPrefix + "] ";
             toLog += "[" + logLevelString + "] ";
             toLog += logMessage;
 
             //log to Console
             Console.WriteLine(toLog);
 
-            //Log to Console Window
-            CurrentStateUtils.CurrentState.ConsoleBuffer.Add(toLog);
-
-            //Log to File
-            Files.writeToFile(toLog, "launcher.log");
+            //Log to Custom Delegates
+            foreach (_customLogDelegate customLogDelegate in customLogDelegates)
+            {
+                customLogDelegate.Invoke(toLog, logLevel);
+            }
         }
 
-        /// <summary>
-        /// Sows a dialog for an error
-        /// </summary>the string to show & log</param>
-        public static void showError(string logMessage, bool quitApplication = false, bool quitLaunch = false)
+        public static void showError(string logMessage, string[] actions = null)
         {
-            Logging.logMessage(logMessage, 4);
-            MessageBox.Show(logMessage, "ERROR!");
-            if (quitApplication)
+            foreach (_showErrorDelegate showErrorDelegate in showErrorDelegates)
             {
-                Environment.Exit(0);
-            }
-
-            if (quitLaunch)
-            {
-                Minecraft.Launch.abortLaunch();
+                showErrorDelegate.Invoke(logMessage, actions);
             }
         }
     }

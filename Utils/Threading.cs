@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace Gusto.Launcher.Utils
+namespace RX14.Utils
 {
-    class Threading
+    public class Threading
     {
         public static void StartThread(ParameterizedThreadStart work)
         {

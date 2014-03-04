@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net;
 
-namespace Gusto.Launcher.Utils
+namespace RX14.Utils
 {
     /// <summary>
     /// Class for handling web functions
     /// </summary>
-    class Web
+    public class Web
     {
         /// <summary>
         /// Downloads a file from the internet to a directory.
@@ -19,7 +19,10 @@ namespace Gusto.Launcher.Utils
         /// <param name="URL">The URL of the file to download.</param>
         /// <param name="downloadDirectory">The directory to download the file to.</param>
         /// <param name="overwrite">Whether to overwrite what's there</param>
-        public static bool downloadFile(string URL, string downloadDirectory, bool overwrite = false, bool showErrors = true, bool specifyDownloadFile = false, bool errorOnMainFail = true, bool abortLaunchOnFail = false)
+        /// <param name="abortLaunchOnFail"></param>
+        /// <param name="showErrors"></param>
+        /// <param name="specifyDownloadFile"></param>
+        public static bool downloadFile(string URL, string downloadDirectory, bool overwrite = false, bool silent = false, bool specifyDownloadFile = false, bool silentMainError = false, string[] errorActions = null)
         {
 
             //Get filename from URL
@@ -52,7 +55,7 @@ namespace Gusto.Launcher.Utils
                 //Acctually download file
                 try
                 {
-                    if (showErrors) Logging.logMessage("Trying to download " + URL + " to " + downloadDirectory, 2);
+                    if (!silent) Logging.logMessage("Trying to download " + URL + " to " + downloadDirectory, 2);
                     WebClient wc = new WebClient();
                     if (specifyDownloadFile == true)
                     {
@@ -67,11 +70,11 @@ namespace Gusto.Launcher.Utils
                 }
                 catch (Exception e)
                 {
-                    if (errorOnMainFail) Logging.showError("Failed to download " + URL + " :" + e.ToString(), false, abortLaunchOnFail);
+                    if (!silentMainError) Logging.showError("Failed to download " + URL + " :" + e.ToString(), errorActions);
                     return false;
                 }
             } else {
-                if (showErrors) Logging.logMessage("Didn't download " + URL + " to " + downloadDirectory + " because it already existed", 2);
+                if (!silent) Logging.logMessage("Didn't download " + URL + " to " + downloadDirectory + " because it already existed", 2);
             }
             return true;
         }
