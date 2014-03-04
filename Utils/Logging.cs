@@ -11,10 +11,21 @@ namespace RX14.Utils
     /// </summary>
     public class Logging
     {
-        public delegate void _showErrorDelegate(string logMessage, string[] actions);
-        public delegate void _customLogDelegate(string logMessage, int logLevel);
-        public static List<_showErrorDelegate> showErrorDelegates = new List<_showErrorDelegate>();
-        public static List<_customLogDelegate> customLogDelegates = new List<_customLogDelegate>();
+        /// <summary>
+        /// Delegate for handling showError
+        /// </summary>
+        /// <param name="errorMessage">The error message to send to the handler</param>
+        /// <param name="actions">List of actions to pass to the handler</param>
+        public delegate void _showErrorHandler(string errorMessage, string[] actions);
+
+        /// <summary>
+        /// Delegate for handling Log Messages
+        /// </summary>
+        /// <param name="logMessage"></param>
+        /// <param name="logLevel"></param>
+        public delegate void _customLogHandler(string logMessage, int logLevel);
+        public static List<_showErrorHandler> showErrorHandlers = new List<_showErrorHandler>();
+        public static List<_customLogHandler> customLoggers = new List<_customLogHandler>();
         public static string LogPrefix;
         
         /// <summary>
@@ -47,17 +58,18 @@ namespace RX14.Utils
             Console.WriteLine(toLog);
 
             //Log to Custom Delegates
-            foreach (_customLogDelegate customLogDelegate in customLogDelegates)
+            foreach (_customLogHandler customLogDelegate in customLoggers)
             {
                 customLogDelegate.Invoke(toLog, logLevel);
             }
         }
 
-        public static void showError(string logMessage, string[] actions = null)
+        public static void showError(string errorMessage, string[] actions = null)
         {
-            foreach (_showErrorDelegate showErrorDelegate in showErrorDelegates)
+            logMessage(errorMessage, 4);
+            foreach (_showErrorHandler showErrorDelegate in showErrorHandlers)
             {
-                showErrorDelegate.Invoke(logMessage, actions);
+                showErrorDelegate.Invoke(errorMessage, actions);
             }
         }
     }

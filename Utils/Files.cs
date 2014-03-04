@@ -56,20 +56,32 @@ namespace RX14.Utils
             }
         }
 
-        public static void unZip(string FileName, string Directory, string FileFilter = "", string[] mainErrorActions = null, bool silent = false)
+        /// <summary>
+        /// Unzips a file
+        /// </summary>
+        /// <param name="ZipFile">The Zip file to unpack</param>
+        /// <param name="Directory">The directory to unpack to</param>
+        /// <param name="FileFilter">#ZipLib-Style FileFilter</param>
+        /// <param name="ErrorActions">The ErrorActions to pass to the logger</param>
+        /// <param name="silent">Whether to showError on failure</param>
+        public static void unZip(string ZipFile, string Directory, string FileFilter = "", string[] ErrorActions = null, bool silent = false)
         {
             FastZip fz = new FastZip();
             try
             {
-                fz.ExtractZip(FileName, Directory, FileFilter);
+                fz.ExtractZip(ZipFile, Directory, FileFilter);
             }
             catch (Exception e)
             {
-                if (!silent) Logging.showError(e.ToString(), mainErrorActions);
+                if (!silent) Logging.showError(e.ToString(), ErrorActions);
             }
             fz = null;
         }
 
+        /// <summary>
+        /// Gets the Java install path
+        /// </summary>
+        /// <returns>the java install path</returns>
         public static string GetJavaInstallPath()
         {
             String javaKey = "SOFTWARE\\JavaSoft\\Java Runtime Environment";
