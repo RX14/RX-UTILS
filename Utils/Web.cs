@@ -19,9 +19,10 @@ namespace RX14.Utils
         /// <param name="URL">The URL of the file to download.</param>
         /// <param name="downloadDirectory">The directory to download the file to.</param>
         /// <param name="overwrite">Whether to overwrite what's there</param>
-        /// <param name="abortLaunchOnFail"></param>
-        /// <param name="showErrors"></param>
-        /// <param name="specifyDownloadFile"></param>
+        /// <param name="errorActions">Actions to pass to showError on main error.</param>
+        /// <param name="silent">Whether to show messages when it starts downloading or if the file allready existed</param>
+        /// <param name="silentMainError">Whether to error if the main try loop fails.</param>
+        /// <param name="specifyDownloadFile">Whether the downloadDirectory includes the file name to download to</param>
         public static bool downloadFile(string URL, string downloadDirectory, bool overwrite = false, bool silent = false, bool specifyDownloadFile = false, bool silentMainError = false, string[] errorActions = null)
         {
 
@@ -100,12 +101,12 @@ namespace RX14.Utils
         }
 
         /// <summary>
-        /// POST's an URL with some data
+        /// POSTs an URL with some data
         /// </summary>
         /// <param name="URL">URL to Post</param>
         /// <param name="data">Data to POST with</param>
         /// <param name="contentType">Content Type to set on the Request</param>
-        /// <returns>Returned String</returns>
+        /// <returns>What the webpage returns</returns>
         public static string POST_URL(string URL, string data, string contentType = "text/plain")
         {
             //Create WebRequest with correct Headers and Method

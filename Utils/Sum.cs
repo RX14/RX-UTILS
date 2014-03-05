@@ -8,8 +8,16 @@ using System.Security.Cryptography;
 
 namespace RX14.Utils
 {
+    /// <summary>
+    /// Contains utils for summing files.
+    /// </summary>
     public class Sum
     {
+        /// <summary>
+        /// Gives a SHA1 Sum of the specified file
+        /// </summary>
+        /// <param name="filelocation">Filename to sum</param>
+        /// <returns>The SHA1 in string format</returns>
         public static string sha1sum(string filelocation)
         {
             FileStream fs = new FileStream(filelocation, FileMode.Open);

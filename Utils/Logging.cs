@@ -29,7 +29,7 @@ namespace RX14.Utils
         public static string LogPrefix;
         
         /// <summary>
-        /// Logs a Message
+        /// Logs a Message using console and custom Loggers.
         /// 
         /// LogLevels:
         /// 1 = Debug,
@@ -64,6 +64,11 @@ namespace RX14.Utils
             }
         }
 
+        /// <summary>
+        /// Shows an error using logMessage and showErrorHandlers
+        /// </summary>
+        /// <param name="errorMessage">The error message to log</param>
+        /// <param name="actions">The actions to send to the Error Handler.</param>
         public static void showError(string errorMessage, string[] actions = null)
         {
             logMessage(errorMessage, 4);
