@@ -63,9 +63,10 @@ namespace RX14.Utils
         /// <param name="Directory">The directory to unpack to</param>
         /// <param name="FileFilter">#ZipLib-Style FileFilter</param>
         /// <param name="ErrorActions">The ErrorActions to pass to the logger</param>
-        /// <param name="silent">Whether to showError on failure</param>
-        public static void unZip(string ZipFile, string Directory, string FileFilter = "", string[] ErrorActions = null, bool silent = false)
+        /// <param name="ignoreError">Whether to showError on failure</param>
+        public static void unZip(string ZipFile, string Directory, string FileFilter = "", string[] ErrorActions = null, bool silent = false, bool ignoreError = false)
         {
+            if (!silent) Logging.logMessage("Unzipping: " + ZipFile);
             FastZip fz = new FastZip();
             try
             {
@@ -73,7 +74,7 @@ namespace RX14.Utils
             }
             catch (Exception e)
             {
-                if (!silent) Logging.showError(e.ToString(), ErrorActions);
+                if (!ignoreError) Logging.showError(e.ToString(), ErrorActions);
             }
             fz = null;
         }

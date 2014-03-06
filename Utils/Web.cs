@@ -21,9 +21,9 @@ namespace RX14.Utils
         /// <param name="overwrite">Whether to overwrite what's there</param>
         /// <param name="errorActions">Actions to pass to showError on main error.</param>
         /// <param name="silent">Whether to show messages when it starts downloading or if the file allready existed</param>
-        /// <param name="silentMainError">Whether to error if the main try loop fails.</param>
+        /// <param name="ignoreError">Whether to error if the main try loop fails.</param>
         /// <param name="specifyDownloadFile">Whether the downloadDirectory includes the file name to download to</param>
-        public static bool downloadFile(string URL, string downloadDirectory, bool overwrite = false, bool silent = false, bool specifyDownloadFile = false, bool silentMainError = false, string[] errorActions = null)
+        public static bool downloadFile(string URL, string downloadDirectory, bool overwrite = false, bool silent = false, bool specifyDownloadFile = false, bool ignoreError = false, string[] errorActions = null)
         {
 
             //Get filename from URL
@@ -71,7 +71,7 @@ namespace RX14.Utils
                 }
                 catch (Exception e)
                 {
-                    if (!silentMainError) Logging.showError("Failed to download " + URL + " :" + e.ToString(), errorActions);
+                    if (!ignoreError) Logging.showError("Failed to download " + URL + " :" + e.ToString(), errorActions);
                     return false;
                 }
             } else {
@@ -107,42 +107,50 @@ namespace RX14.Utils
         /// <param name="data">Data to POST with</param>
         /// <param name="contentType">Content Type to set on the Request</param>
         /// <returns>What the webpage returns</returns>
-        public static string POST_URL(string URL, string data, string contentType = "text/plain")
+        public static string POST_URL(string URL, string data, string contentType = "text/plain", bool ignoreError = false, string[] errorActions = null)
         {
-            //Create WebRequest with correct Headers and Method
-            HttpWebRequest wr = (HttpWebRequest)WebRequest.Create(URL);
-            //wr.Accept = "application/json";
-            wr.ContentType = contentType;
-            wr.Method = "POST";
-
-            //Convert data into ByteArray
-            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);
-
-            //string test = System.Text.Encoding.UTF8.GetString(bytes);
-
-            //Send Data
-            Stream send = wr.GetRequestStream();
-            send.Write(bytes, 0, bytes.Length);
-            send.Close();
-
-            WebResponse response = null;
             try
             {
-                //Try to get response
-                response = wr.GetResponse();
+                //Create WebRequest with correct Headers and Method
+                HttpWebRequest wr = (HttpWebRequest)WebRequest.Create(URL);
+                //wr.Accept = "application/json";
+                wr.ContentType = contentType;
+                wr.Method = "POST";
+
+                //Convert data into ByteArray
+                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);
+
+                //string test = System.Text.Encoding.UTF8.GetString(bytes);
+
+                //Send Data
+                Stream send = wr.GetRequestStream();
+                send.Write(bytes, 0, bytes.Length);
+                send.Close();
+
+                WebResponse response = null;
+                try
+                {
+                    //Try to get response
+                    response = wr.GetResponse();
+                }
+                catch (WebException ex)
+                {
+                    //On error get error response
+                    response = ex.Response;
+                }
+
+                //Parse Response
+                Stream responsestream = response.GetResponseStream();
+                StreamReader sr = new StreamReader(responsestream);
+                string content = sr.ReadToEnd();
+
+                return content;
             }
-            catch (WebException ex)
+            catch (Exception e)
             {
-                //On error get error response
-                response = ex.Response;
+                if (!ignoreError) Logging.showError("Failed to POST URL:" + Environment.NewLine + e.ToString(), errorActions);
+                return null;
             }
-
-            //Parse Response
-            Stream responsestream = response.GetResponseStream();
-            StreamReader sr = new StreamReader(responsestream);
-            string content = sr.ReadToEnd();
-
-            return content;
         }
     }
 }

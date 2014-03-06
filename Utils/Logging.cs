@@ -24,9 +24,26 @@ namespace RX14.Utils
         /// <param name="logMessage"></param>
         /// <param name="logLevel"></param>
         public delegate void _customLogHandler(string logMessage, int logLevel);
+
+        /// <summary>
+        /// List of showError handlers to add your handler to.
+        /// </summary>
         public static List<_showErrorHandler> showErrorHandlers = new List<_showErrorHandler>();
+
+        /// <summary>
+        /// List of custom loggers to add your cistom logger to
+        /// </summary>
         public static List<_customLogHandler> customLoggers = new List<_customLogHandler>();
-        public static string LogPrefix;
+
+        /// <summary>
+        /// LogPrefix for the log messages
+        /// 
+        /// Operators:
+        ///     ${time} = time with format 10:00:00 AM
+        ///     ${logLevel} = log level type
+        ///     ${logMessage} = logged message
+        /// </summary>
+        public static string LogFormat;
         
         /// <summary>
         /// Logs a Message using console and custom Loggers.
@@ -50,9 +67,7 @@ namespace RX14.Utils
             else logLevelString = "LOG-LVL-ERR";
             
             //Generate Log String
-            string toLog = DateTime.Now.ToString("hh:mm:ss tt") + " ["+ LogPrefix + "] ";
-            toLog += "[" + logLevelString + "] ";
-            toLog += logMessage;
+            string toLog = LogFormat.Replace("${time}", DateTime.Now.ToString("hh:mm:ss tt")).Replace("${logLevel}", logLevelString).Replace("${logMessage}", logMessage);
 
             //log to Console
             Console.WriteLine(toLog);
