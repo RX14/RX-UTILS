@@ -11,7 +11,7 @@ namespace RX14.Utils
     /// <summary>
     /// Class for handling web functions
     /// </summary>
-    public class Web
+    public class HTTP
     {
         /// <summary>
         /// Downloads a file from the internet to a directory.
