@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
+using System.Net.FtpClient;
 
 namespace RX14.Utils
 {
@@ -151,6 +152,69 @@ namespace RX14.Utils
                 if (!ignoreError) Logging.showError("Failed to POST URL:" + Environment.NewLine + e.ToString(), errorActions);
                 return null;
             }
+        }
+    }
+
+    /// <summary>
+    /// Handles FTP thingies
+    /// </summary>
+    public class FTP
+    {
+        /// <summary>
+        /// Uploads a file to FTP
+        /// </summary>
+        /// <param name="localFileName">Local file to upload</param>
+        /// <param name="uploadPath">URI of the file to upload</param>
+        /// <param name="silent"></param>
+        /// <param name="ignoreError"></param>
+        /// <param name="errorActions"></param>
+        public static void uploadFTP(string Host, string localFileName, string serverPath, NetworkCredential Credentials, bool silent = false, bool ignoreError = false, string[] errorActions = null)
+        {
+            try
+            {
+                int bufferSize = 8192;
+                FtpClient FTP = new FtpClient();
+                FTP.ValidateCertificate += FTPClient_ValidateCertificate;
+                FTP.Host = Host;
+                FTP.Credentials = Credentials;
+                FTP.Connect();
+
+                if (!silent) Logging.logMessage("Connected to: " + Host, 1);
+
+                if (!FTP.DirectoryExists(serverPath))
+                {
+                    Logging.logMessage("Created directory on server: " + serverPath);
+                    FTP.CreateDirectory(serverPath);
+                }
+
+                FileStream localFile = new FileStream(localFileName, FileMode.OpenOrCreate);
+                byte[] Buffer = new byte[bufferSize];
+                Stream writeStream = FTP.OpenWrite(serverPath + Path.GetFileName(localFileName), FtpDataType.Binary);
+                int bytesSent = localFile.Read(Buffer, 0, bufferSize);
+
+                while (bytesSent != 0)
+                {
+                    writeStream.Write(Buffer, 0, bytesSent);
+                    bytesSent = localFile.Read(Buffer, 0, bufferSize);
+                }
+
+                localFile.Close();
+                writeStream.Close();
+                FTP.Dispose();
+
+                if (!silent) Logging.logMessage("Disconnedted from FTP server", 1);
+
+            }
+            catch (Exception e)
+            {
+                if (!ignoreError) Logging.showError("Failed to upload file via FTP:" + Environment.NewLine + e.ToString(), errorActions);
+            }
+
+        }
+
+        static void FTPClient_ValidateCertificate(FtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
         }
     }
 }
