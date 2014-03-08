@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RX14.Utils
 {
-    class Constants
+    public class Constants
     {
         /// <summary>
         /// https://minotar.net/helm/
