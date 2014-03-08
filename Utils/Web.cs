@@ -28,9 +28,8 @@ namespace RX14.Utils
         {
 
             //Get filename from URL
-            string filename = URL.Split('/')[URL.Split('/').Length - 1];
-            string fn = downloadDirectory.TrimEnd('/').Split('/')[downloadDirectory.TrimEnd('/').Split('/').Length - 1];
-            string dir = downloadDirectory.Remove(downloadDirectory.Length - fn.Length);
+            string filename = Path.GetFileName(new Uri(URL).AbsolutePath);
+            string dir = Path.GetDirectoryName(downloadDirectory);
 
             //If the file exists check if overwrite is accepted
             if (!(File.Exists(downloadDirectory + "/" + filename) | File.Exists(downloadDirectory)) || overwrite)
@@ -59,7 +58,7 @@ namespace RX14.Utils
                 {
                     if (!silent) Logging.logMessage("Trying to download " + URL + " to " + downloadDirectory, 2);
                     WebClient wc = new WebClient();
-                    if (specifyDownloadFile == true)
+                    if (specifyDownloadFile)
                     {
                         wc.DownloadFile(new Uri(URL), downloadDirectory);
                     }
