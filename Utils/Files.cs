@@ -40,7 +40,7 @@ namespace RX14.Utils
         /// <param name="text">The text to write</param>
         /// <param name="file">The filename to write to</param>
         /// <param name="append">Whether to append to the file or overwrite</param>
-        public static void writeToFile(string text, string file, bool append = true)
+        public static bool writeToFile(string text, string file, bool append = true, bool ignoreError = false, string[] errorActions = null)
         {
             //NO LOGGER in here because of recursion!
             try
@@ -52,8 +52,10 @@ namespace RX14.Utils
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                if (!ignoreError) Logging.showError(e.ToString(), errorActions);
+                return false;
             }
+            return true;
         }
 
         /// <summary>
@@ -64,7 +66,8 @@ namespace RX14.Utils
         /// <param name="FileFilter">#ZipLib-Style FileFilter</param>
         /// <param name="ErrorActions">The ErrorActions to pass to the logger</param>
         /// <param name="ignoreError">Whether to showError on failure</param>
-        public static void unZip(string ZipFile, string Directory, string FileFilter = "", string[] ErrorActions = null, bool silent = false, bool ignoreError = false)
+        /// <param name="silent">Whether to show basic messages</param>
+        public static bool unZip(string ZipFile, string Directory, string FileFilter = "", string[] ErrorActions = null, bool silent = false, bool ignoreError = false)
         {
             if (!silent) Logging.logMessage("Unzipping: " + ZipFile);
             FastZip fz = new FastZip();
@@ -75,8 +78,35 @@ namespace RX14.Utils
             catch (Exception e)
             {
                 if (!ignoreError) Logging.showError(e.ToString(), ErrorActions);
+                return false;
             }
             fz = null;
+            return true;
+        }
+
+        /// <summary>
+        /// Zips up a folder
+        /// </summary>
+        /// <param name="Directory">Directory to zip up</param>
+        /// <param name="ZipFile">Zip file to create</param>
+        /// <param name="FileFilter">#ZipLib FileFilter</param>
+        /// <param name="silent">Whether to show basic messages</param>
+        /// <param name="ignoreError">Whether to ignore Errors</param>
+        /// <param name="errorActions">Actions to perform on error</param>
+        public static bool Zip(string Directory, string ZipFile, string FileFilter = "", bool silent = false, bool ignoreError = false, string[] errorActions = null)
+        {
+            if (!silent) Logging.logMessage("Zipping: " + Directory);
+            FastZip fz = new FastZip();
+            try
+            {
+                fz.CreateZip(ZipFile, Directory, true, FileFilter);
+            }
+            catch (Exception e)
+            {
+                if (!ignoreError) Logging.showError("Failed to zip directory" + Environment.NewLine + e.ToString(), errorActions);
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
