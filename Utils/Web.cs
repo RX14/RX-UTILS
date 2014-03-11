@@ -15,7 +15,7 @@ namespace RX14.Utils
     public class HTTP
     {
         /// <summary>
-        /// Downloads a file from the internet to a directory.
+        /// Downloads a file from the internet to a directory Asynchronously.
         /// </summary>
         /// <param name="URL">The URL of the file to download.</param>
         /// <param name="downloadDirectory">The directory to download the file to.</param>
@@ -24,7 +24,7 @@ namespace RX14.Utils
         /// <param name="silent">Whether to show messages when it starts downloading or if the file allready existed</param>
         /// <param name="ignoreError">Whether to error if the main try loop fails.</param>
         /// <param name="specifyDownloadFile">Whether the downloadDirectory includes the file name to download to</param>
-        public static bool downloadFile(string URL, string downloadDirectory, bool overwrite = false, bool silent = false, bool specifyDownloadFile = false, bool ignoreError = false, string[] errorActions = null)
+        public static async Task<bool> downloadFileAsync(string URL, string downloadDirectory, bool overwrite = false, bool silent = false, bool specifyDownloadFile = false, bool ignoreError = false, string[] errorActions = null)
         {
 
             //Get filename from URL
@@ -60,11 +60,11 @@ namespace RX14.Utils
                     WebClient wc = new WebClient();
                     if (specifyDownloadFile)
                     {
-                        wc.DownloadFile(new Uri(URL), downloadDirectory);
+                        await wc.DownloadFileTaskAsync(new Uri(URL), downloadDirectory);
                     }
                     else
                     {
-                        wc.DownloadFile(new Uri(URL), downloadDirectory + "/" + filename);
+                        await wc.DownloadFileTaskAsync(new Uri(URL), downloadDirectory + "/" + filename);
                     }
                     wc.Dispose();
                     wc = null;
@@ -78,6 +78,11 @@ namespace RX14.Utils
                 if (!silent) Logging.logMessage("Didn't download " + URL + " to " + downloadDirectory + " because it already existed", 2);
             }
             return true;
+        }
+
+        public static bool downloadFile(string URL, string downloadDirectory, bool overwrite = false, bool silent = false, bool specifyDownloadFile = false, bool ignoreError = false, string[] errorActions = null)
+        {
+            return downloadFileAsync(URL, downloadDirectory, overwrite, silent, specifyDownloadFile, ignoreError, errorActions).Result;
         }
 
         /// <summary>
