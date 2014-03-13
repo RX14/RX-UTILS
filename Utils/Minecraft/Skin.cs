@@ -22,7 +22,7 @@ namespace RX14.Utils.Minecraft
         /// <param name="username">The Minecraft Username</param>
         /// <param name="imgSize">The side length of the image to return.</param>
         /// <returns>Returns a BitmapImage</returns>
-        public static BitmapImage getUserHead(string username, int imgSize = -1, bool silent = false, string[] errorAction = null)
+        public static string getUserHead(string username, string downloadFolder, int imgSize = -1, bool silent = false, string[] errorAction = null)
         {
             if (!silent) Logging.logMessage("Trying to display head for " + username + "...");
 
@@ -36,9 +36,8 @@ namespace RX14.Utils.Minecraft
                 minotarLocation = Constants.HelmDownloadURL + username + "/" + imgSize + ".png";
             }
 
-            HTTP.downloadFile(minotarLocation, "cache/UserHeads/" + username, silent: true);
-
-            return Image.loadBitmapFromFile("cache/UserHeads/" + username + "/" + minotarLocation.Split('/')[minotarLocation.Split('/').Length - 1], UriKind.Relative);
+            HTTP.downloadFile(minotarLocation, downloadFolder + "/" + username, silent: silent);
+            return downloadFolder + "/" + username + "/" + Path.GetFileName(new Uri(minotarLocation).AbsolutePath);
         }
     }
 }
